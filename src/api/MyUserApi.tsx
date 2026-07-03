@@ -1,15 +1,15 @@
-import { useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { toast } from "sonner";
 import type { User } from "@/types";
+import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Get MyUser API
-
-export const useGetMyUser = () =>{
-  const { getAccessTokenSilently, isAuthenticated, isLoading: isAuthLoading } = useAuth0();
+// =========================================================================
+// 1. GET USER HOOK
+// =========================================================================
+export const useGetMyUser = () => {
+  const { getAccessTokenSilently } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
     const accessToken = await getAccessTokenSilently();
@@ -29,25 +29,26 @@ export const useGetMyUser = () =>{
     return response.json();
   };
 
-  const { data: currentUser, isLoading, error } = useQuery({
+  // FIX: Wrapped parameters in an options object with queryKey and queryFn
+  const {
+    data: currentUser,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["fetchCurrentUser"],
     queryFn: getMyUserRequest,
-    enabled: isAuthenticated && !isAuthLoading,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error.message);
-    }
-  }, [error]);
+  if (error) {
+    toast.error(error.toString());
+  }
 
   return { currentUser, isLoading };
 };
 
-// Create MyUser API
+// =========================================================================
+// 2. CREATE USER HOOK
+// =========================================================================
 type CreateUserRequest = {
   auth0Id: string;
   email: string;
@@ -72,24 +73,27 @@ export const useCreateMyUser = () => {
     }
   };
 
+  // FIX: Wrapped inside object option and renamed isLoading to isPending
   const {
     mutateAsync: createUser,
-    isPending: isLoading,
+    isPending,
     isError,
     isSuccess,
   } = useMutation({
-    mutationFn: createMyUserRequest, // Pass your function here as an object property
+    mutationFn: createMyUserRequest,
   });
 
   return {
     createUser,
-    isLoading,
+    isLoading: isPending, // Maps back to the original property name for UI compatibility
     isError,
     isSuccess,
   };
 };
 
-// Update MyUser API
+// =========================================================================
+// 3. UPDATE USER HOOK
+// =========================================================================
 type UpdateMyUserRequest = {
   name: string;
   addressLine1: string;
@@ -119,9 +123,10 @@ export const useUpdateMyUser = () => {
     return response.json();
   };
 
+  // FIX: Wrapped inside object option and renamed isLoading to isPending
   const {
     mutateAsync: updateUser,
-    isPending: isLoading,
+    isPending,
     isSuccess,
     error,
     reset,
@@ -129,7 +134,7 @@ export const useUpdateMyUser = () => {
     mutationFn: updateMyUserRequest,
   });
 
- if (isSuccess) {
+  if (isSuccess) {
     toast.success("User profile updated!");
   }
 
@@ -137,6 +142,6 @@ export const useUpdateMyUser = () => {
     toast.error(error.toString());
     reset();
   }
-  
-  return { updateUser, isLoading };
+
+  return { updateUser, isLoading: isPending };
 };
