@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "sonner";
@@ -8,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // Get MyUser API
 
 export const useGetMyUser = () =>{
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading: isAuthLoading } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
     const accessToken = await getAccessTokenSilently();
@@ -28,14 +29,20 @@ export const useGetMyUser = () =>{
     return response.json();
   };
 
-  const { data: currentUser, isLoading, error,} = useQuery({
-    queryKey: ["fetchCurrentUser"], // Must be an array in v5
-    queryFn: getMyUserRequest,       // The function executing the fetch
+  const { data: currentUser, isLoading, error } = useQuery({
+    queryKey: ["fetchCurrentUser"],
+    queryFn: getMyUserRequest,
+    enabled: isAuthenticated && !isAuthLoading,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  if (error) {
-    toast.error(error.toString());
-  }
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message);
+    }
+  }, [error]);
 
   return { currentUser, isLoading };
 };

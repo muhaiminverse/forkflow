@@ -5,17 +5,21 @@ import { useNavigate } from "react-router-dom";
 
 const AuthCallBackPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const { createUser } = useCreateMyUser();
 
   const hasCreatedUser = useRef(false);
   useEffect(() => {
-    if (user?.sub && user?.email && !hasCreatedUser.current) {
-      createUser({ auth0Id: user.sub, email: user.email });
+    if (!isAuthenticated || isLoading || hasCreatedUser.current) {
+      return;
+    }
+
+    if (user?.sub && user?.email) {
+      void createUser({ auth0Id: user.sub, email: user.email });
       hasCreatedUser.current = true;
       navigate("/");
     }
-  }, [createUser, navigate, user]);
+  }, [createUser, isAuthenticated, isLoading, navigate, user?.email, user?.sub]);
 
   return <>Loading...</>
 }
