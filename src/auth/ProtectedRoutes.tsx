@@ -8,6 +8,7 @@ const ProtectedRoute = () => {
     return null;
   }
 
+  // Outlet is all the child roots
   if (isAuthenticated) {
     return <Outlet />;
   }
