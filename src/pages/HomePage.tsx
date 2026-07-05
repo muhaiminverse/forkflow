@@ -2,7 +2,7 @@ import landingImage from "../assets/landing.png"
 import appDownloadImage from "../assets/appDownload.png"
 import SearchBar, { type SearchForm } from "@/components/SearchBar";
 import { useNavigate } from "react-router-dom";
-import type { ja } from "zod/v4/locales";
+
 
 const HomePage = () => {
     const navigate = useNavigate();
