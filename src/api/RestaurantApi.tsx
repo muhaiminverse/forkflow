@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// =========================================================================
+// 1. GET RESTURANT_ID HOOK
+// =========================================================================
 export const useGetRestaurant = (restaurantId?: string) => {
   const getRestaurantByIdRequest = async (): Promise<Restaurant> => {
     const response = await fetch(
@@ -26,6 +29,9 @@ export const useGetRestaurant = (restaurantId?: string) => {
   return { restaurant, isLoading };
 };
 
+// =========================================================================
+// 1. SEARCH RESTURANT HOOK
+// =========================================================================
 export const useSearchRestaurants = (
   searchState: SearchState,
   city?: string

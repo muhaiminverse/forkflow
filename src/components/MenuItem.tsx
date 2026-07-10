@@ -1,0 +1,24 @@
+// FIX: Use 'as' to alias the type import to MenuItemType
+import type { MenuItem as MenuItemType } from "../types";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+type Props = {
+  menuItem: MenuItemType; // Use the aliased type name here
+    addToCart: () => void;
+};
+
+// Now 'MenuItem' belongs purely to your React component!
+const MenuItem = ({ menuItem, addToCart  }: Props) => {
+  return (
+    <Card className="cursor-pointer" onClick={addToCart}>
+      <CardHeader>
+        <CardTitle>{menuItem.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="font-bold">
+        BDT {(menuItem.price / 100).toFixed(2)}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default MenuItem;
