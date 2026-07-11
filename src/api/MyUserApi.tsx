@@ -9,9 +9,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // 1. GET USER HOOK
 // =========================================================================
 export const useGetMyUser = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
+    if (!isAuthenticated) {
+      throw new Error("User not authenticated");
+    }
+
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/my/user`, {
@@ -32,18 +36,19 @@ export const useGetMyUser = () => {
   // FIX: Wrapped parameters in an options object with queryKey and queryFn
   const {
     data: currentUser,
-    isLoading,
+    isLoading: isUserLoading,
     error,
   } = useQuery({
     queryKey: ["fetchCurrentUser"],
     queryFn: getMyUserRequest,
+    enabled: !isLoading && isAuthenticated,
   });
 
   if (error) {
     toast.error(error.toString());
   }
 
-  return { currentUser, isLoading };
+  return { currentUser, isLoading: isUserLoading };
 };
 
 // =========================================================================
@@ -55,9 +60,13 @@ type CreateUserRequest = {
 };
 
 export const useCreateMyUser = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const createMyUserRequest = async (user: CreateUserRequest) => {
+    if (!isAuthenticated) {
+      throw new Error("User not authenticated");
+    }
+
     const accessToken = await getAccessTokenSilently();
     const response = await fetch(`${API_BASE_URL}/api/my/user`, {
       method: "POST",
@@ -102,9 +111,13 @@ type UpdateMyUserRequest = {
 };
 
 export const useUpdateMyUser = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const updateMyUserRequest = async (formData: UpdateMyUserRequest) => {
+    if (!isAuthenticated) {
+      throw new Error("User not authenticated");
+    }
+
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/my/user`, {
