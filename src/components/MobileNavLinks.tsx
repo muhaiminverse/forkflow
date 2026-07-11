@@ -25,7 +25,7 @@ const MobileNavLinks = () => {
             >
                 User Profile
             </Link>
-            {/* // Change the Button's onClick function[cite: 5] */}
+            
             <Button
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
                 className="flex items-center px-3 font-bold hover:bg-gray-500 bg-black text-white"
