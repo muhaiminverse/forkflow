@@ -20,7 +20,7 @@ const UsernameMenu = () => {
         {user?.name}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-         <DropdownMenuItem>
+        <DropdownMenuItem>
           <Link
             to="/manage-restaurant"
             className="font-bold hover:text-orange-500"
@@ -35,8 +35,9 @@ const UsernameMenu = () => {
         </DropdownMenuItem>
         <Separator />
         <DropdownMenuItem>
+          // Change the Button's onClick function[cite: 4]
           <Button
-            onClick={() => logout()}
+            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
             className="flex flex-1 font-bold bg-orange-500"
           >
             Log Out
