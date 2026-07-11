@@ -1,19 +1,20 @@
-import { Auth0Provider, type AppState } from "@auth0/auth0-react";
+import {type AppState, Auth0Provider } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const Auth0ProviderWithNaviagte = ({ children }: Props) => {
+const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
 
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
   const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL;
-  if (!domain || !clientId || !audience || !redirectUri) {
-    throw new Error("Missing Auth0 configuration in environment variables");
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+
+  if (!domain || !clientId || !redirectUri || !audience) {
+    throw new Error("unable to initialise auth");
   }
 
   const onRedirectCallback = (appState?: AppState) => {
@@ -25,12 +26,9 @@ const Auth0ProviderWithNaviagte = ({ children }: Props) => {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        scope: "openid profile email offline_access",
         redirect_uri: redirectUri,
         audience,
       }}
-      cacheLocation="localstorage"
-      useRefreshTokens={true}
       onRedirectCallback={onRedirectCallback}
     >
       {children}
@@ -38,4 +36,4 @@ const Auth0ProviderWithNaviagte = ({ children }: Props) => {
   );
 };
 
-export default Auth0ProviderWithNaviagte;
+export default Auth0ProviderWithNavigate;
